@@ -15,6 +15,7 @@ app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173' }))
 app.use('/api/payments/webhook', express.raw({ type: 'application/json' }))
 app.use(express.json())
 app.use(passport.initialize())
+app.get("/", (_req, res) => res.send("FixMate API is running"))
 app.get('/api/health', (_req, res) => res.json({ status: 'ok', service: 'fixmate-api' }))
 app.use('/api/auth', authRoutes)
 app.use('/api/profile', profileRoutes)
@@ -24,7 +25,7 @@ app.use('/api/admin', adminRoutes)
 app.use((error, _req, res, _next) => { console.error(error); res.status(500).json({ message: 'Something went wrong.' }) })
 
 const port = process.env.PORT || 5000
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/fixmate').then(() => {
+mongoose.connect(process.env.MONGODB_URI).then(() => {
   startPlanExpiryJob()
   app.listen(port, () => console.log(`FixMate API running on http://localhost:${port}`))
 }).catch((error) => { console.error('MongoDB connection failed:', error.message); process.exit(1) })

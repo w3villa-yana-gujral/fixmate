@@ -82,3 +82,18 @@ stripe listen --forward-to localhost:5000/api/payments/webhook
 ```
 
 Copy the `whsec_...` value printed by the CLI into `STRIPE_WEBHOOK_SECRET`, then restart the API. Use Stripe's test card `4242 4242 4242 4242`, any future expiry date, and any three-digit CVC. The webhook upgrades the account only after Stripe confirms the checkout session.
+
+## Deploy
+
+The client is a Vite static site and can run on Vercel. The API starts a persistent Express server and a plan-expiry cron job, so deploy it as a Render Web Service rather than a Vercel Function.
+
+1. Push the project to a Git repository.
+2. In Render, create a Blueprint from that repository and use the included `render.yaml`. Set `MONGODB_URI` to your Atlas connection string and choose the `fixmate` database in the URI. Render generates `JWT_SECRET` for the service.
+3. In Vercel, import the same repository and set **Root Directory** to `client`. Use `npm run build` as the build command and `dist` as the output directory.
+4. Add `VITE_API_URL` to the Vercel project's environment variables, set to the Render API origin (for example, `https://fixmate-api.onrender.com`, with no trailing slash), then redeploy the client.
+5. In Render, add or update `CLIENT_URL` to the Vercel production origin and `API_URL` to the Render API origin, both without trailing slashes. Redeploy the API after changing environment variables.
+6. In MongoDB Atlas, allow connections from the API host. Avoid `0.0.0.0/0` where possible; it allows connections from any IP and is less restrictive.
+
+Configure additional Render environment variables only for features you use: SMTP (`SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD`, `EMAIL_FROM`), Google/Facebook OAuth, Stripe (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`), Cloudinary, and `ADMIN_SIGNUP_EMAILS`. For OAuth, register callbacks at `https://<api-origin>/api/auth/google/callback` and `https://<api-origin>/api/auth/facebook/callback`. Set the Stripe webhook endpoint to `https://<api-origin>/api/payments/webhook`.
+
+Never put database credentials, JWT secrets, OAuth secrets, Stripe secrets, or Cloudinary secrets in Vercel's `VITE_` variables or commit them to the repository. If a credential has been shared or committed, rotate it in its provider before deployment.
