@@ -11,7 +11,7 @@ const adminRoutes = require('./routes/admin')
 const { startPlanExpiryJob } = require('./services/planExpiry')
 
 const app = express()
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173' }))
+app.use(cors({ origin: "*"}))
 app.use('/api/payments/webhook', express.raw({ type: 'application/json' }))
 app.use(express.json())
 app.use(passport.initialize())
