@@ -1,6 +1,7 @@
 const express = require('express')
 const Stripe = require('stripe')
 const User = require('../models/User')
+const Booking = require('../models/Booking')
 const { requireAuth } = require('../middleware/auth')
 const { PLAN_DEFINITIONS, activationFields } = require('../services/plans')
 
@@ -39,12 +40,33 @@ async function activatePaidSession(session, userId) {
   return User.findByIdAndUpdate(userId, { ...activationFields(session.metadata.plan, session.payment_intent || session.id), stripeCustomerId: session.customer || undefined }, { new: true }).select('-passwordHash -verificationToken -verificationExpires')
 }
 
+async function confirmPaidBookingSession(session, userId) {
+  if (session.metadata?.type !== 'booking' || session.metadata.userId !== String(userId)) return null
+  const booking = await Booking.findOne({ _id: session.metadata.bookingId, user: userId, stripeSessionId: session.id })
+  if (!booking || booking.status === 'cancelled') return null
+  if (session.payment_status !== 'paid' || session.currency !== 'inr' || session.amount_total !== booking.amountDue * 100) return null
+  if (booking.paymentStatus !== 'paid') {
+    booking.paymentStatus = 'paid'
+    booking.paidAt = new Date()
+    booking.amountPaid = booking.amountDue
+    booking.status = 'confirmed'
+    await booking.save()
+  }
+  return booking
+}
+
 router.get('/session-status', requireAuth, async (req, res, next) => {
   try {
     if (!stripe) return res.status(503).json({ message: 'Stripe is not configured.' })
     if (!req.query.session_id) return res.status(400).json({ message: 'Missing checkout session.' })
     const session = await stripe.checkout.sessions.retrieve(req.query.session_id)
     if (session.metadata?.userId !== String(req.auth.sub)) return res.status(403).json({ message: 'This checkout session does not belong to this account.' })
+    if (session.metadata?.type === 'booking') {
+      const booking = await confirmPaidBookingSession(session, req.auth.sub)
+      if (session.payment_status !== 'paid') return res.json({ status: 'pending' })
+      if (!booking) return res.status(400).json({ message: 'This booking payment could not be verified.' })
+      return res.json({ status: 'paid', booking })
+    }
     if (session.payment_status !== 'paid' && session.status !== 'complete') return res.json({ status: 'pending' })
     const user = await activatePaidSession(session, req.auth.sub)
     res.json({ status: 'paid', user })
@@ -55,9 +77,10 @@ router.post('/webhook', async (req, res) => {
   if (!stripe || !process.env.STRIPE_WEBHOOK_SECRET) return res.status(503).send('Stripe webhook is not configured.')
   let event
   try { event = stripe.webhooks.constructEvent(req.body, req.headers['stripe-signature'], process.env.STRIPE_WEBHOOK_SECRET) } catch (error) { return res.status(400).send(`Webhook Error: ${error.message}`) }
-  if (event.type === 'checkout.session.completed') {
+  if (['checkout.session.completed', 'checkout.session.async_payment_succeeded'].includes(event.type)) {
     const session = event.data.object
-    await activatePaidSession(session, session.metadata?.userId)
+    if (session.metadata?.type === 'booking') await confirmPaidBookingSession(session, session.metadata?.userId)
+    else await activatePaidSession(session, session.metadata?.userId)
   }
   res.json({ received: true })
 })

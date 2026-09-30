@@ -1,0 +1,218 @@
+:root {
+  --lime-cream: #f2d28c;
+  --light-green: #d4e7cf;
+  --light-green-2: #a9d0b6;
+  --emerald: #65a78c;
+  --ocean-mist: #4e9c91;
+  --tropical-teal: #2f817b;
+  --bondi-blue: #276e73;
+  --cerulean: #235f68;
+  --baltic-blue: #214f57;
+  --yale-blue: #193b42;
+  --fixmate-gradient: linear-gradient(132deg, #193b42, #286f6c 58%, #65a78c);
+  --ink-strong: #193b36;
+  --ink-muted: #435d53;
+  --surface-soft: #f3f7f1;
+  --surface-line: #c5d3c9;
+}
+
+html, body {
+  background: #f3f7f1;
+  color: var(--ink-strong);
+}
+
+.home-shell, .auth-shell {
+  color: var(--ink-strong);
+  background: radial-gradient(ellipse at 82% 8%, rgba(242,210,140,.17), transparent 30%), linear-gradient(145deg, #f7f8f2, #eff6f1 54%, #eaf3f1);
+}
+
+.home-header {
+  background: rgba(248,250,245,.94);
+  border-color: #c7d5cb;
+  box-shadow: 0 8px 24px rgba(25,59,54,.08);
+}
+
+.home-header nav button { color: #4d665c; }
+.home-header .brand-mark, .home-header nav button.active, .logout-button { color: var(--ink-strong); }
+.home-header nav button.active { border-bottom-color: #c58d35; }
+.eyebrow, .plan-kicker { color: #76571f; }
+.public-hero h1, .welcome-row h1, .plans-heading h1, .profile-page-heading h1, .bookings-heading h1, .section-heading h2, .public-how > h2 { color: var(--ink-strong); }
+.public-hero h1 em, .welcome-row h1 span, h2 em { color: #28766f; }
+.public-hero-copy > p:not(.eyebrow), .welcome-row > div:first-child > p:last-child, .plans-heading > p:not(.eyebrow), .profile-page-heading p:not(.eyebrow), .bookings-heading p:not(.eyebrow), .admin-heading p:not(.eyebrow) { color: var(--ink-muted); }
+.service-discount-note, .category-card small, .activity-item small, .plan-detail, .plan-card ul, .booking-main p, .muted-copy, .secure-note, .step-card p { color: #4b6358; }
+.fine-print, .form-subtitle, .topline { color: #4b6158; }
+.home-header nav button:hover, .text-button:hover, .forgot-link:hover { color: #246c67; }
+
+.public-hero-visual {
+  overflow: hidden;
+  border: 1px solid rgba(39,110,115,.16);
+  border-radius: 12px;
+  background: linear-gradient(145deg, #d9e8dd, #c8ddd1 55%, #f1dfbd);
+  box-shadow: 0 28px 58px rgba(25,59,54,.17), inset 0 1px 0 rgba(255,255,255,.72);
+  transform: perspective(1200px) rotateY(-2deg);
+  transition: transform .45s ease, box-shadow .45s ease;
+}
+.public-hero-visual:hover { transform: perspective(1200px) rotateY(0) translateY(-3px); box-shadow: 0 34px 66px rgba(25,59,54,.2); }
+
+.primary-button, .dark-button {
+  color: #fff;
+  background: linear-gradient(125deg, #214f57, #2f817b);
+  box-shadow: 0 8px 18px rgba(33,79,87,.2);
+}
+.primary-button:hover, .dark-button:hover { background: linear-gradient(125deg, #193b42, #276e73); box-shadow: 0 13px 26px rgba(33,79,87,.27); }
+.public-login, .public-secondary-button, .export-button, .upload-button, .outline-button { color: #214f57; border-color: #b7c9be; background: rgba(255,255,255,.78); }
+.public-login:hover, .public-secondary-button:hover, .export-button:hover, .upload-button:hover, .outline-button:hover { border-color: #568b76; background: #e6f0e5; }
+
+.category-card, .plan-card, .profile-form, .map-card, .booking-history, .activity-list, .step-card, .empty-activity, .empty-bookings, .trust-card {
+  border-color: var(--surface-line);
+  box-shadow: 0 10px 26px rgba(25,59,54,.09);
+}
+.category-card, .plan-card, .profile-form, .booking-history, .activity-list, .step-card, .empty-activity, .empty-bookings { background: rgba(255,255,255,.88); }
+.category-card strong, .activity-item strong, .plan-card h2, .profile-form h2, .booking-main strong, .empty-bookings h2, .step-card strong { color: var(--ink-strong); }
+.step-card { border-radius: 10px; }
+.step-card:hover { border-color: #57917c; box-shadow: 0 24px 38px rgba(25,59,54,.17); }
+.category-card:hover, .plan-card:hover, .profile-form:hover, .booking-history:hover { box-shadow: 0 18px 32px rgba(25,59,54,.15); }
+
+.profile-form input, .booking-modal input, .booking-modal textarea, .admin-toolbar input, .admin-toolbar select, form input {
+  border-color: #bdcec3;
+  background: #fff !important;
+  color: #193b36;
+}
+.profile-form input::placeholder, .booking-modal input::placeholder, .booking-modal textarea::placeholder, .admin-toolbar input::placeholder, form input::placeholder { color: #667b70; opacity: 1; }
+.profile-form input:focus, .booking-modal input:focus, .booking-modal textarea:focus, .admin-toolbar input:focus, .admin-toolbar select:focus, form input:focus { border-color: #32847c; box-shadow: 0 0 0 3px rgba(47,129,123,.17); }
+
+.admin-page { perspective: 1400px; }
+.admin-heading {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  overflow: hidden;
+  margin: 0 0 22px;
+  padding: 27px 30px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 12px;
+  background: linear-gradient(115deg, #193b42, #286f6c 62%, #4e927d);
+  box-shadow: 0 20px 38px rgba(25,59,54,.2);
+  animation: admin-arrive .55s ease both;
+}
+.admin-heading::after {
+  position: absolute;
+  top: -105px;
+  right: 13%;
+  width: 270px;
+  height: 270px;
+  border: 1px solid rgba(242,210,140,.27);
+  border-radius: 50%;
+  content: '';
+  box-shadow: 0 0 0 30px rgba(242,210,140,.04), 0 0 0 65px rgba(242,210,140,.035);
+  pointer-events: none;
+}
+.admin-heading > div:first-child, .admin-heading .admin-total { position: relative; z-index: 1; }
+.admin-heading .eyebrow { color: #f2d28c; }
+.admin-heading h1 { margin: 8px 0; color: #fff; font-size: 38px; }
+.admin-heading p:not(.eyebrow) { color: #e0eee6; font-size: 14px; line-height: 1.55; }
+.admin-total {
+  min-width: 132px;
+  padding: 13px 17px;
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 9px;
+  color: #fff;
+  background: rgba(255,255,255,.12);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.13);
+  backdrop-filter: blur(10px);
+}
+.admin-total strong { font-size: 28px; }
+.admin-total small { color: #f2e8cf; font-size: 10px; }
+.admin-metrics { gap: 14px; margin-bottom: 20px; perspective: 900px; }
+.admin-metrics > div {
+  min-height: 86px;
+  padding: 17px 19px;
+  border: 1px solid #c9d8ce;
+  border-radius: 9px;
+  background: linear-gradient(145deg, #fff, #f0f6ef);
+  box-shadow: 0 9px 22px rgba(25,59,54,.08), inset 0 1px 0 #fff;
+  animation: admin-arrive .5s ease both;
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.admin-metrics > div:nth-child(2) { animation-delay: .07s; }
+.admin-metrics > div:nth-child(3) { animation-delay: .14s; }
+.admin-metrics > div:hover { transform: perspective(700px) rotateX(3deg) translateY(-5px); border-color: #74a38c; box-shadow: 0 17px 30px rgba(25,59,54,.15); }
+.admin-metrics span { color: #fff; background: linear-gradient(145deg, #286f6c, #65a78c); box-shadow: 0 5px 12px rgba(33,79,87,.2); }
+.admin-metrics > div strong { color: #193b36; font-size: 23px; }
+.admin-metrics > div small { color: #4b6358; font-size: 10px; }
+.admin-toolbar { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(145px, 190px) minmax(175px, 220px); gap: 10px; margin: 0 0 14px; }
+.admin-toolbar input, .admin-toolbar select { min-width: 0; min-height: 44px; border: 1px solid #bdcec3; border-radius: 7px; background-color: #fff !important; color: #193b36; font-size: 13px; }
+.admin-table-wrap { overflow: auto; border: 1px solid #c6d5cb; border-radius: 10px; background: #fff; box-shadow: 0 12px 27px rgba(25,59,54,.09); }
+.admin-table { min-width: 790px; }
+.admin-table th { padding: 14px 16px; color: #f8f5e9; background: #214f57; font-size: 10px; letter-spacing: .7px; }
+.admin-table td { padding: 15px 16px; border-color: #e1e9e3; color: #344f45; font-size: 12px; }
+.admin-table tbody tr { transition: background-color .18s ease, transform .18s ease; }
+.admin-table tbody tr:hover { background: #edf5ed; }
+.admin-user strong { color: #193b36; font-size: 12px; }
+.admin-user small { color: #4b6358; font-size: 11px; }
+.role-pill, .admin-status { padding: 5px 9px; border-radius: 999px; font-size: 10px; font-weight: 700; }
+.role-pill { color: #214f57; background: #deece9; }
+.admin-status.active { color: #20583e; background: #dcefe1; }
+.admin-status.pending { color: #704d16; background: #f6e8c7; }
+.admin-status.inactive { color: #47594f; background: #e9eeea; }
+.admin-table-message { height: 86px; color: #4b6358 !important; text-align: center; }
+.admin-error { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 12px; padding: 12px 15px; border: 1px solid #dfb9ad; border-radius: 7px; color: #713b30; background: #fff0e9; font-size: 13px; }
+.admin-error button { padding: 7px 11px; border: 1px solid #c89483; border-radius: 5px; color: #713b30; background: #fffaf7; font-weight: 700; }
+.pagination { color: #435d53; font-size: 12px; }
+.pagination button { border-color: #bdcec3; border-radius: 6px; color: #214f57; background: #fff; font-size: 12px; }
+.pagination button:hover:not(:disabled) { border-color: #568b76; background: #e8f1e9; }
+
+@keyframes admin-arrive { from { opacity: 0; transform: translateY(12px) rotateX(-2deg); } to { opacity: 1; transform: translateY(0) rotateX(0); } }
+
+html[data-theme='dark'] body, html[data-theme='dark'] .home-shell, html[data-theme='dark'] .auth-shell {
+  color: #edf5ef;
+  background: radial-gradient(ellipse at 82% 8%, rgba(78,156,145,.16), transparent 30%), linear-gradient(145deg, #102622, #122e32 58%, #142b38);
+}
+html[data-theme='dark'] .home-header { background: rgba(16,38,34,.94); border-color: #34544a; }
+html[data-theme='dark'] .home-header nav button, html[data-theme='dark'] .home-header nav button.active, html[data-theme='dark'] .home-header .brand-mark, html[data-theme='dark'] .logout-button { color: #e4eee7; }
+html[data-theme='dark'] .eyebrow, html[data-theme='dark'] .plan-kicker { color: #f2d28c; }
+html[data-theme='dark'] .public-hero h1, html[data-theme='dark'] .welcome-row h1, html[data-theme='dark'] .plans-heading h1, html[data-theme='dark'] .profile-page-heading h1, html[data-theme='dark'] .bookings-heading h1, html[data-theme='dark'] .section-heading h2, html[data-theme='dark'] .public-how > h2 { color: #edf5ef; }
+html[data-theme='dark'] .public-hero-copy > p:not(.eyebrow), html[data-theme='dark'] .welcome-row > div:first-child > p:last-child, html[data-theme='dark'] .plans-heading > p:not(.eyebrow), html[data-theme='dark'] .profile-page-heading p:not(.eyebrow), html[data-theme='dark'] .bookings-heading p:not(.eyebrow), html[data-theme='dark'] .service-discount-note, html[data-theme='dark'] .step-card p { color: #c0d4ca; }
+html[data-theme='dark'] .category-card, html[data-theme='dark'] .plan-card, html[data-theme='dark'] .profile-form, html[data-theme='dark'] .booking-history, html[data-theme='dark'] .activity-list, html[data-theme='dark'] .step-card, html[data-theme='dark'] .empty-activity, html[data-theme='dark'] .empty-bookings { border-color: #3a5d50; background: #1b3530; }
+html[data-theme='dark'] .category-card strong, html[data-theme='dark'] .activity-item strong, html[data-theme='dark'] .plan-card h2, html[data-theme='dark'] .profile-form h2, html[data-theme='dark'] .booking-main strong, html[data-theme='dark'] .empty-bookings h2, html[data-theme='dark'] .step-card strong { color: #edf5ef; }
+html[data-theme='dark'] .category-card small, html[data-theme='dark'] .activity-item small, html[data-theme='dark'] .plan-detail, html[data-theme='dark'] .plan-card ul, html[data-theme='dark'] .booking-main p, html[data-theme='dark'] .muted-copy, html[data-theme='dark'] .secure-note { color: #c0d4ca; }
+html[data-theme='dark'] .profile-form input, html[data-theme='dark'] .booking-modal input, html[data-theme='dark'] .booking-modal textarea, html[data-theme='dark'] .admin-toolbar input, html[data-theme='dark'] .admin-toolbar select, html[data-theme='dark'] form input { border-color: #527263; background: #142a26 !important; color: #edf5ef; }
+html[data-theme='dark'] .profile-form input::placeholder, html[data-theme='dark'] .booking-modal input::placeholder, html[data-theme='dark'] .booking-modal textarea::placeholder, html[data-theme='dark'] .admin-toolbar input::placeholder, html[data-theme='dark'] form input::placeholder { color: #b0c5b8; }
+html[data-theme='dark'] .admin-heading { border-color: #426b5c; background: linear-gradient(115deg, #102e35, #205e5b 62%, #347b69); }
+html[data-theme='dark'] .admin-heading h1 { color: #fff; }
+html[data-theme='dark'] .admin-heading p:not(.eyebrow) { color: #e0eee6; }
+html[data-theme='dark'] .admin-metrics > div { border-color: #3a5d50; background: linear-gradient(145deg, #1b3530, #203c36); }
+html[data-theme='dark'] .admin-metrics > div strong { color: #edf5ef; }
+html[data-theme='dark'] .admin-metrics > div small, html[data-theme='dark'] .pagination { color: #c0d4ca; }
+html[data-theme='dark'] .admin-table-wrap { border-color: #3a5d50; background: #1b3530; }
+html[data-theme='dark'] .admin-table th { color: #fff8e8; background: #214f57; }
+html[data-theme='dark'] .admin-table td { border-color: #345248; color: #d1e0d7; }
+html[data-theme='dark'] .admin-table tbody tr:hover { background: #26443b; }
+html[data-theme='dark'] .admin-user strong { color: #edf5ef; }
+html[data-theme='dark'] .admin-user small { color: #c0d4ca; }
+html[data-theme='dark'] .admin-table-message { color: #c0d4ca !important; }
+html[data-theme='dark'] .pagination button { border-color: #527263; color: #edf5ef; background: #1b3530; }
+
+@media (max-width: 760px) {
+  .admin-toolbar { grid-template-columns: 1fr; }
+  .admin-heading { align-items: flex-start; padding: 22px; }
+  .admin-heading h1 { font-size: 32px; }
+  .admin-heading .admin-total { min-width: 112px; }
+}
+
+@media (max-width: 600px) {
+  .public-hero-visual { transform: none; }
+  .admin-heading { flex-direction: column; }
+  .admin-heading .admin-total { width: 100%; }
+  .admin-metrics { grid-template-columns: 1fr; }
+  .admin-metrics > div { min-height: 72px; }
+  .pagination { flex-wrap: wrap; gap: 10px; }
+  .pagination span { order: -1; flex-basis: 100%; text-align: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .public-hero-visual, .admin-heading, .admin-metrics > div { animation: none; transition: none; }
+  .public-hero-visual:hover, .admin-metrics > div:hover { transform: none; }
+}

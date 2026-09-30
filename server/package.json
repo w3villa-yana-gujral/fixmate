@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
-    "check": "node --check src/index.js && node --check src/routes/auth.js && node --check src/routes/payments.js && node --check src/routes/profile.js && node --check src/routes/bookings.js && node --check src/routes/admin.js && node --check src/services/plans.js && node --check src/services/planExpiry.js && node --check src/services/adminSignup.js && node --check src/models/User.js && node --check src/models/Booking.js"
+    "check": "node --check src/index.js && node --check src/routes/auth.js && node --check src/routes/payments.js && node --check src/routes/profile.js && node --check src/routes/bookings.js && node --check src/routes/admin.js && node --check src/services/plans.js && node --check src/services/servicePricing.js && node --check src/services/planExpiry.js && node --check src/services/adminSignup.js && node --check src/models/User.js && node --check src/models/Booking.js"
   },
   "keywords": [],
   "author": "",

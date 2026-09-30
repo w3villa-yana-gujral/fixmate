@@ -8,8 +8,6 @@ const userSchema = new mongoose.Schema({
   isVerified: { type: Boolean, default: false },
   verificationToken: { type: String },
   verificationExpires: { type: Date },
-  resetPasswordToken: { type: String },
-  resetPasswordExpires: { type: Date },
   avatar: {
     url: { type: String },
     publicId: { type: String }

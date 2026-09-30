@@ -6,7 +6,7 @@ const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 const FacebookStrategy = require('passport-facebook').Strategy
 const User = require('../models/User')
-const { sendVerificationEmail, sendPasswordResetEmail } = require('../services/email')
+const { sendVerificationEmail } = require('../services/email')
 
 const router = express.Router()
 const tokenFor = (user, rememberMe = false) => jwt.sign({ sub: user._id, role: user.role }, process.env.JWT_SECRET || 'development-secret', { expiresIn: rememberMe ? '30d' : '1d' })
@@ -55,31 +55,6 @@ router.post('/login', async (req, res, next) => {
     if (!user || !user.passwordHash || !(await bcrypt.compare(password || '', user.passwordHash))) return res.status(401).json({ message: 'Invalid email or password.' })
     if (!user.isVerified) return res.status(403).json({ message: 'Please verify your email before logging in.' })
     res.json({ token: tokenFor(user, rememberMe), user: { id: user._id, name: user.name, email: user.email, role: user.role } })
-  } catch (error) { next(error) }
-})
-
-router.post('/forgot-password', async (req, res, next) => {
-  try {
-    const email = req.body.email?.toLowerCase().trim()
-    const user = await User.findOne({ email })
-    if (user) {
-      const token = crypto.randomBytes(32).toString('hex')
-      user.resetPasswordToken = token; user.resetPasswordExpires = Date.now() + 15 * 60 * 1000
-      await user.save(); await sendPasswordResetEmail(user, token)
-    }
-    res.json({ message: 'If an account exists for that email, a reset link has been sent.' })
-  } catch (error) { next(error) }
-})
-
-router.post('/reset-password', async (req, res, next) => {
-  try {
-    const { token, password } = req.body
-    if (!token || !password || password.length < 8) return res.status(400).json({ message: 'A valid token and password of at least 8 characters are required.' })
-    const user = await User.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } })
-    if (!user) return res.status(400).json({ message: 'This reset link is invalid or expired.' })
-    user.passwordHash = await bcrypt.hash(password, 12); user.resetPasswordToken = undefined; user.resetPasswordExpires = undefined
-    await user.save()
-    res.json({ message: 'Password reset successfully. You can now log in.' })
   } catch (error) { next(error) }
 })
 
