@@ -7,6 +7,7 @@ const { SERVICE_PRICES, getActivePlan, getServicePrice } = require('../services/
 
 const router = express.Router()
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null
+const clientUrl = process.env.CLIENT_URL || (process.env.NODE_ENV === 'production' ? 'https://fixmate-lilac.vercel.app' : 'http://localhost:5173')
 const services = [
   { id: 'cleaning', title: 'Cleaning', icon: '⌂', detail: 'Home refresh' },
   { id: 'plumbing', title: 'Plumbing', icon: '⌁', detail: 'Fix a leak' },
@@ -67,8 +68,8 @@ router.post('/', requireAuth, async (req, res, next) => {
           quantity: 1
         }],
         metadata: { type: 'booking', userId: String(user._id), bookingId: String(booking._id) },
-        success_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}?payment=success&checkout_type=booking&session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}?payment=cancelled&checkout_type=booking&booking_id=${booking._id}`
+        success_url: `${clientUrl}?payment=success&checkout_type=booking&session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${clientUrl}?payment=cancelled&checkout_type=booking&booking_id=${booking._id}`
       })
       booking.stripeSessionId = session.id
       await booking.save()

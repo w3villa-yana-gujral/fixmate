@@ -7,6 +7,7 @@ const { PLAN_DEFINITIONS, activationFields } = require('../services/plans')
 
 const router = express.Router()
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null
+const clientUrl = process.env.CLIENT_URL || (process.env.NODE_ENV === 'production' ? 'https://fixmate-lilac.vercel.app' : 'http://localhost:5173')
 
 router.get('/plans', (_req, res) => res.json({ plans: PLAN_DEFINITIONS }))
 
@@ -26,8 +27,8 @@ router.post('/checkout', requireAuth, async (req, res, next) => {
       customer_email: user.email,
       line_items: [{ price_data: { currency: 'inr', product_data: { name: plan.name, description: `${plan.description} for ${plan.durationHours} hours` }, unit_amount: plan.amount }, quantity: 1 }],
       metadata: { userId: String(user._id), plan: req.body.plan },
-      success_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}?payment=success&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}?payment=cancelled`
+      success_url: `${clientUrl}?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${clientUrl}?payment=cancelled`
     })
     user.planStatus = 'pending'; await user.save()
     res.json({ url: session.url })
