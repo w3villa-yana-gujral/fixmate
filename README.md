@@ -90,7 +90,7 @@ The client is a Vite static site and can run on Vercel. The API starts a persist
 1. Push the project to a Git repository.
 2. In Render, create a Blueprint from that repository and use the included `render.yaml`. Set `MONGODB_URI` to your Atlas connection string and choose the `fixmate` database in the URI. Render generates `JWT_SECRET` for the service.
 3. In Vercel, import the same repository and set **Root Directory** to `client`. Use `npm run build` as the build command and `dist` as the output directory.
-4. Add `VITE_API_URL` to the Vercel project's environment variables, set to the Render API origin (for example, `https://fixmate-api.onrender.com`, with no trailing slash), then redeploy the client.
+4. Add `VITE_API_URL` to the Vercel project's environment variables and set it to the API origin (for this deployment, `https://fixmate-lilac.vercel.app`, with no trailing slash), then redeploy the client. Set it for Preview deployments too if you use them; otherwise the client code falls back to this API origin.
 5. In Render, add or update `CLIENT_URL` to the Vercel production origin and `API_URL` to the Render API origin, both without trailing slashes. Redeploy the API after changing environment variables.
 6. In MongoDB Atlas, allow connections from the API host. Avoid `0.0.0.0/0` where possible; it allows connections from any IP and is less restrictive.
 

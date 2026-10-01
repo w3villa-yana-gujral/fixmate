@@ -5,7 +5,7 @@ import './profile.css'
 import './modern.css'
 import './theme.css'
 
-const apiUrl = import.meta.env.VITE_API_URL || window.location.origin
+const apiUrl = import.meta.env.VITE_API_URL || 'https://fixmate-lilac.vercel.app'
 const HomeScene = lazy(() => import('./HomeScene.jsx'))
 
 function mapNominatimResult(result) {
