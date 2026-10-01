@@ -218,6 +218,35 @@ form input:focus { border-color: #58aa9d; box-shadow: 0 0 0 3px rgba(48,155,148,
 }
 
 .bookings-page { max-width: 1240px; padding-top: 52px; }
+
+.service-picker-modal {
+  box-sizing: border-box;
+  width: min(100%, 820px);
+  max-width: 820px;
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.picker-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 145px), 1fr));
+}
+
+.picker-card {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.picker-card .service-price {
+  max-width: calc(100% - 20px);
+  margin-left: 10px;
+}
+
+.picker-card .service-price-amount {
+  flex-wrap: wrap;
+}
 .bookings-heading { align-items: center; gap: 24px; margin-bottom: 24px; }
 .bookings-heading h1 { margin: 7px 0 8px; line-height: 1.08; }
 .bookings-heading p:not(.eyebrow) { color: #4d6257; font-size: 14px; line-height: 1.5; }
