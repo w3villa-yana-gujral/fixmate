@@ -5,7 +5,7 @@ import './profile.css'
 import './modern.css'
 import './theme.css'
 
-const apiUrl = 'https://fixmate-lilac.vercel.app'
+const apiUrl = import.meta.env.VITE_API_URL || window.location.origin
 const HomeScene = lazy(() => import('./HomeScene.jsx'))
 
 function mapNominatimResult(result) {
@@ -278,14 +278,25 @@ function Dashboard({ user, setUser, pendingAction, bookingPaymentUpdate, message
   }
 
   const downloadProfile = async () => {
-    const response = await fetch(`${apiUrl}/api/profile/me/export.pdf`, { headers: { Authorization: `Bearer ${localStorage.getItem('fixmate_token')}` } })
-    if (!response.ok) return
-    const blob = await response.blob()
-    const link = document.createElement('a')
-    link.href = URL.createObjectURL(blob)
-    link.download = `fixmate-profile-${user._id}.pdf`
-    link.click()
-    URL.revokeObjectURL(link.href)
+    try {
+      const response = await fetch(`${apiUrl}/api/profile/me/export.pdf`, { headers: { Authorization: `Bearer ${localStorage.getItem('fixmate_token')}` } })
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}))
+        throw new Error(data.message || 'Could not download your profile.')
+      }
+      const contentType = response.headers.get('content-type') || ''
+      if (!contentType.includes('application/pdf')) throw new Error('The server did not return a PDF file.')
+      const blobUrl = URL.createObjectURL(await response.blob())
+      const link = document.createElement('a')
+      link.href = blobUrl
+      link.download = `fixmate-profile-${user._id}.pdf`
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.setTimeout(() => URL.revokeObjectURL(blobUrl), 1000)
+    } catch (error) {
+      setMessage(error.message || 'Could not download your profile.')
+    }
   }
 
   const startCheckout = useCallback(async (plan) => {

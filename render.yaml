@@ -9,6 +9,8 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: CLIENT_URL
+        value: https://fixmate-lilac.vercel.app
       - key: MONGODB_URI
         sync: false
       - key: JWT_SECRET
