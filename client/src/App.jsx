@@ -1,4 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import { jsPDF } from 'jspdf'
 import AddressMap from './AddressMap.jsx'
 import './App.css'
 import './profile.css'
@@ -277,23 +278,78 @@ function Dashboard({ user, setUser, pendingAction, bookingPaymentUpdate, message
     if (response.ok) { setAddress(data.user.address); setAddressInput(data.user.address.formatted || addressInput); setAddressSaved(true); setTimeout(() => setAddressSaved(false), 3000) }
   }
 
-  const downloadProfile = async () => {
+  const downloadProfile = () => {
     try {
-      const response = await fetch(`${apiUrl}/api/profile/me/export.pdf`, { headers: { Authorization: `Bearer ${localStorage.getItem('fixmate_token')}` } })
-      if (!response.ok) {
-        const data = await response.json().catch(() => ({}))
-        throw new Error(data.message || 'Could not download your profile.')
+      const pdf = new jsPDF({ unit: 'mm', format: 'a4' })
+      const pageWidth = pdf.internal.pageSize.getWidth()
+      const left = 18
+      const right = pageWidth - left
+      const profileAddress = address || {}
+      const displayDate = (value) => value && !Number.isNaN(new Date(value).getTime())
+        ? new Date(value).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+        : 'Not provided'
+      const field = (label, value, x, y, width) => {
+        pdf.setFont('helvetica', 'normal')
+        pdf.setFontSize(8)
+        pdf.setTextColor(103, 120, 110)
+        pdf.text(label, x, y)
+        pdf.setFont('helvetica', 'bold')
+        pdf.setFontSize(10)
+        pdf.setTextColor(36, 49, 45)
+        const lines = pdf.splitTextToSize(String(value || 'Not provided'), width)
+        pdf.text(lines, x, y + 6)
+        return Math.max(1, lines.length) * 5
       }
-      const contentType = response.headers.get('content-type') || ''
-      if (!contentType.includes('application/pdf')) throw new Error('The server did not return a PDF file.')
-      const blobUrl = URL.createObjectURL(await response.blob())
-      const link = document.createElement('a')
-      link.href = blobUrl
-      link.download = `fixmate-profile-${user._id}.pdf`
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      window.setTimeout(() => URL.revokeObjectURL(blobUrl), 1000)
+
+      pdf.setFillColor(23, 62, 56)
+      pdf.rect(0, 0, pageWidth, 40, 'F')
+      pdf.setTextColor(228, 185, 94)
+      pdf.setFont('helvetica', 'bold')
+      pdf.setFontSize(20)
+      pdf.text('+', left, 20)
+      pdf.setTextColor(248, 244, 233)
+      pdf.setFontSize(18)
+      pdf.text('fixmate', left + 9, 20)
+      pdf.setFont('helvetica', 'normal')
+      pdf.setFontSize(8)
+      pdf.setTextColor(215, 228, 218)
+      pdf.text(`Exported ${displayDate(new Date())}`, left, 31)
+
+      pdf.setTextColor(36, 49, 45)
+      pdf.setFont('helvetica', 'bold')
+      pdf.setFontSize(19)
+      pdf.text('Profile information', left, 55)
+
+      const section = (title, y) => {
+        pdf.setFont('helvetica', 'bold')
+        pdf.setFontSize(9)
+        pdf.setTextColor(22, 112, 116)
+        pdf.text(title.toUpperCase(), left, y)
+        pdf.setDrawColor(215, 224, 216)
+        pdf.line(left, y + 3, right, y + 3)
+      }
+
+      section('Account details', 69)
+      field('Full name', user.name, left, 79, 78)
+      field('Email address', user.email, 108, 79, 84)
+      field('Account type', user.role === 'admin' ? 'Administrator' : 'Homeowner', left, 98, 78)
+      field('Email status', user.isVerified ? 'Verified' : 'Not verified', 108, 98, 84)
+      field('Member since', displayDate(user.createdAt), left, 117, 90)
+
+      section('Home address', 139)
+      const fullAddress = profileAddress.formatted || profileAddress.line1
+      const addressHeight = field('Address', fullAddress, left, 149, right - left)
+      const locationY = 149 + addressHeight + 8
+      field('City', profileAddress.city, left, locationY, 52)
+      field('State', profileAddress.state, 78, locationY, 52)
+      field('Postal code', profileAddress.postalCode, 138, locationY, 54)
+      field('Country', profileAddress.country, left, locationY + 19, 90)
+
+      pdf.setFont('helvetica', 'normal')
+      pdf.setFontSize(8)
+      pdf.setTextColor(123, 135, 127)
+      pdf.text('Profile details as currently saved in FixMate.', left, 278)
+      pdf.save(`fixmate-profile-${user._id || 'account'}.pdf`)
     } catch (error) {
       setMessage(error.message || 'Could not download your profile.')
     }

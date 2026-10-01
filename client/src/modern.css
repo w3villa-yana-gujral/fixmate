@@ -247,6 +247,118 @@ form input:focus { border-color: #58aa9d; box-shadow: 0 0 0 3px rgba(48,155,148,
 .picker-card .service-price-amount {
   flex-wrap: wrap;
 }
+
+.plans-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+}
+
+.plan-card,
+.profile-form,
+.map-card,
+.booking-history,
+.activity-list,
+.empty-activity,
+.empty-bookings,
+.step-card,
+.admin-metrics > div {
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.booking-main,
+.booking-details,
+.activity-item > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.cancellation-dialog {
+  box-sizing: border-box;
+  width: min(100%, 520px);
+  max-height: calc(100dvh - 40px);
+  min-height: 0;
+}
+
+.cancellation-actions {
+  flex-wrap: wrap;
+}
+
+.cancellation-actions > button {
+  flex: 1 1 150px;
+}
+
+@media (max-width: 1050px) {
+  .booking-overview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .booking-overview > div:nth-child(2) {
+    border-right: 0;
+  }
+
+  .booking-overview > div:nth-child(-n+2) {
+    border-bottom: 1px solid rgba(52,86,83,.17);
+  }
+
+  .booking-row {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 12px 16px;
+    padding: 18px;
+  }
+
+  .booking-main,
+  .booking-meta {
+    grid-column: 2;
+  }
+
+  .booking-meta {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 7px 12px;
+    padding-top: 12px;
+    border-top: 1px solid #c1cdc0;
+    text-align: left;
+  }
+
+  .booking-meta .booking-payment,
+  .booking-meta .booking-priority {
+    justify-self: start;
+  }
+
+  .booking-meta .booking-amount,
+  .booking-meta .booking-cancel {
+    justify-self: end;
+  }
+}
+
+@media (max-width: 520px) {
+  .booking-overview > div {
+    padding: 13px;
+  }
+
+  .booking-overview strong {
+    font-size: 19px;
+  }
+
+  .booking-row {
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .booking-details {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cancellation-dialog {
+    padding: 24px 18px;
+  }
+
+  .cancellation-actions > button {
+    flex-basis: 100%;
+  }
+}
 .bookings-heading { align-items: center; gap: 24px; margin-bottom: 24px; }
 .bookings-heading h1 { margin: 7px 0 8px; line-height: 1.08; }
 .bookings-heading p:not(.eyebrow) { color: #4d6257; font-size: 14px; line-height: 1.5; }
