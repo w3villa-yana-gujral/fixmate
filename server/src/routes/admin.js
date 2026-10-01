@@ -6,7 +6,8 @@ const router = express.Router()
 
 router.get('/users', requireAuth, async (req, res, next) => {
   try {
-    if (req.auth.role !== 'admin') return res.status(403).json({ message: 'Admin access required.' })
+    const requester = await User.findById(req.auth.sub).select('role')
+    if (requester?.role !== 'admin') return res.status(403).json({ message: 'Admin access required.' })
     const page = Math.max(Number.parseInt(req.query.page, 10) || 1, 1)
     const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 10, 1), 50)
     const search = String(req.query.search || '').trim()
