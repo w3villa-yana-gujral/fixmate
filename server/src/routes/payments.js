@@ -4,10 +4,11 @@ const User = require('../models/User')
 const Booking = require('../models/Booking')
 const { requireAuth } = require('../middleware/auth')
 const { PLAN_DEFINITIONS, activationFields } = require('../services/plans')
+const { getClientUrl } = require('../services/clientUrl')
 
 const router = express.Router()
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null
-const clientUrl = process.env.CLIENT_URL || (process.env.NODE_ENV === 'production' ? 'https://fixmate-lilac.vercel.app' : 'http://localhost:5173')
+const clientUrl = getClientUrl()
 
 router.get('/plans', (_req, res) => res.json({ plans: PLAN_DEFINITIONS }))
 
