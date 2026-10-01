@@ -10,7 +10,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: CLIENT_URL
-        value: https://fixmate-lilac.vercel.app
+        value: https://fixmate-client-git-main-yana-404c.vercel.app
       - key: MONGODB_URI
         sync: false
       - key: JWT_SECRET
