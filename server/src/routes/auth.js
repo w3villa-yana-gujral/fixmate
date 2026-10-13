@@ -10,14 +10,15 @@ const { sendVerificationEmail } = require('../services/email')
 
 const router = express.Router()
 const tokenFor = (user, rememberMe = false) => jwt.sign({ sub: user._id, role: user.role }, process.env.JWT_SECRET || 'development-secret', { expiresIn: rememberMe ? '30d' : '1d' })
+const apiUrl = process.env.API_URL || 'https://fixmate-lilac.vercel.app'
 
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-  passport.use(new GoogleStrategy({ clientID: process.env.GOOGLE_CLIENT_ID, clientSecret: process.env.GOOGLE_CLIENT_SECRET, callbackURL: `${process.env.API_URL || 'http://localhost:5000'}/api/auth/google/callback` }, async (_accessToken, _refreshToken, profile, done) => {
+  passport.use(new GoogleStrategy({ clientID: process.env.GOOGLE_CLIENT_ID, clientSecret: process.env.GOOGLE_CLIENT_SECRET, callbackURL: `${apiUrl}/api/auth/google/callback` }, async (_accessToken, _refreshToken, profile, done) => {
     try { done(null, { profile, provider: 'google' }) } catch (error) { done(error) }
   }))
 }
 if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
-  passport.use(new FacebookStrategy({ clientID: process.env.FACEBOOK_APP_ID, clientSecret: process.env.FACEBOOK_APP_SECRET, callbackURL: `${process.env.API_URL || 'http://localhost:5000'}/api/auth/facebook/callback`, graphAPIVersion: process.env.FACEBOOK_GRAPH_API_VERSION || 'v23.0', profileFields: ['id', 'displayName', 'emails'] }, async (_accessToken, _refreshToken, profile, done) => {
+  passport.use(new FacebookStrategy({ clientID: process.env.FACEBOOK_APP_ID, clientSecret: process.env.FACEBOOK_APP_SECRET, callbackURL: `${apiUrl}/api/auth/facebook/callback`, graphAPIVersion: process.env.FACEBOOK_GRAPH_API_VERSION || 'v23.0', profileFields: ['id', 'displayName', 'emails'] }, async (_accessToken, _refreshToken, profile, done) => {
     try { done(null, { profile, provider: 'facebook' }) } catch (error) { done(error) }
   }))
 }
