@@ -10,7 +10,7 @@ const { sendVerificationEmail } = require('../services/email')
 
 const router = express.Router()
 const tokenFor = (user, rememberMe = false) => jwt.sign({ sub: user._id, role: user.role }, process.env.JWT_SECRET || 'development-secret', { expiresIn: rememberMe ? '30d' : '1d' })
-const apiUrl = process.env.API_URL || 'https://fixmate-lilac.vercel.app'
+const apiUrl = 'https://fixmate-lilac.vercel.app'
 
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   passport.use(new GoogleStrategy({ clientID: process.env.GOOGLE_CLIENT_ID, clientSecret: process.env.GOOGLE_CLIENT_SECRET, callbackURL: `${apiUrl}/api/auth/google/callback` }, async (_accessToken, _refreshToken, profile, done) => {
