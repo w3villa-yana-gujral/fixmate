@@ -7,6 +7,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy
 const FacebookStrategy = require('passport-facebook').Strategy
 const User = require('../models/User')
 const { sendVerificationEmail } = require('../services/email')
+const { getClientUrl } = require('../services/clientUrl')
 
 const router = express.Router()
 const tokenFor = (user, rememberMe = false) => jwt.sign({ sub: user._id, role: user.role }, process.env.JWT_SECRET || 'development-secret', { expiresIn: rememberMe ? '30d' : '1d' })
@@ -41,7 +42,7 @@ router.post('/signup', async (req, res, next) => {
 router.get('/verify-email', async (req, res, next) => {
   try {
     const user = await User.findOne({ verificationToken: req.query.token, verificationExpires: { $gt: Date.now() } })
-    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173'
+    const clientUrl = getClientUrl()
     if (!user) return res.redirect(`${clientUrl}/?verification=invalid`)
     user.isVerified = true; user.verificationToken = undefined; user.verificationExpires = undefined
     await user.save()
@@ -81,19 +82,19 @@ router.post('/social/:provider', async (req, res, next) => {
 function socialRedirect(provider) {
   return (req, res, next) => {
     const isConfigured = provider === 'google' ? Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) : Boolean(process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET)
-    if (!isConfigured) return res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/?socialError=${provider}_not_configured`)
+    if (!isConfigured) return res.redirect(`${getClientUrl()}/?socialError=${provider}_not_configured`)
     return passport.authenticate(provider, { session: false, scope: provider === 'google' ? ['profile', 'email'] : ['public_profile'] })(req, res, next)
   }
 }
 router.get('/google', socialRedirect('google'))
 router.get('/facebook', socialRedirect('facebook'))
 router.get('/google/callback', (req, res, next) => {
-  if (!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)) return res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/?socialError=google_not_configured`)
-  return passport.authenticate('google', { session: false, failureRedirect: `${process.env.CLIENT_URL || 'http://localhost:5173'}/?socialError=google` })(req, res, next)
+  if (!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)) return res.redirect(`${getClientUrl()}/?socialError=google_not_configured`)
+  return passport.authenticate('google', { session: false, failureRedirect: `${getClientUrl()}/?socialError=google` })(req, res, next)
 }, async (req, res, next) => completeSocial(req, res, next))
 router.get('/facebook/callback', (req, res, next) => {
-  if (!(process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET)) return res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/?socialError=facebook_not_configured`)
-  return passport.authenticate('facebook', { session: false, failureRedirect: `${process.env.CLIENT_URL || 'http://localhost:5173'}/?socialError=facebook` })(req, res, next)
+  if (!(process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET)) return res.redirect(`${getClientUrl()}/?socialError=facebook_not_configured`)
+  return passport.authenticate('facebook', { session: false, failureRedirect: `${getClientUrl()}/?socialError=facebook` })(req, res, next)
 }, async (req, res, next) => completeSocial(req, res, next))
 
 async function completeSocial(req, res, next) {
@@ -101,7 +102,7 @@ async function completeSocial(req, res, next) {
     const { profile, provider } = req.user
     const email = profile.emails?.[0]?.value || `${provider}-${profile.id}@social.fixmate.local`
     const user = await socialLogin({ name: profile.displayName || profile.username || `${provider} user`, email, provider, providerId: profile.id, role: 'customer' })
-    res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/?token=${tokenFor(user)}`)
+    res.redirect(`${getClientUrl()}/?token=${tokenFor(user)}`)
   } catch (error) { next(error) }
 }
 
