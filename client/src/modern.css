@@ -33,7 +33,18 @@ button { transition: color .18s ease, background-color .18s ease, border-color .
 .public-hero-image { border-radius: 8px; box-shadow: 0 24px 55px rgba(24,63,74,.14); }
 .public-hero-visual { height: 500px; min-width: 0; overflow: hidden; background: linear-gradient(145deg, #c7d5c6, #bdcdbd 52%, #d5d6bd); }
 .home-scene, .home-scene-fallback { width: 100%; height: 100%; min-height: 0; }
-.home-scene canvas { display: block; width: 100%; height: 100%; }
+.home-scene { position: relative; touch-action: pan-y; outline: none; }
+.home-scene canvas { display: block; width: 100%; height: 100%; filter: drop-shadow(0 25px 20px rgba(30,64,53,.24)); }
+.home-scene-status { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
+.home-scene-arrow { position: absolute; z-index: 2; top: 50%; display: grid; place-items: center; width: 42px; height: 42px; padding: 0 0 4px; border: 1px solid rgba(255,255,255,.8); border-radius: 50%; color: #263f3c; background: rgba(250,249,241,.92); box-shadow: 0 5px 15px rgba(25,59,54,.2); font-size: 32px; font-weight: 400; line-height: 1; cursor: pointer; transform: translateY(-50%); transition: background .2s ease, transform .2s ease, box-shadow .2s ease; }
+.home-scene-arrow:hover { background: #fff; box-shadow: 0 8px 20px rgba(25,59,54,.26); }
+.home-scene-arrow:focus-visible, .home-scene-pagination button:focus-visible { outline: 3px solid #e7bd70; outline-offset: 3px; }
+.home-scene-arrow.previous { left: 16px; }
+.home-scene-arrow.next { right: 16px; }
+.home-scene-pagination { position: absolute; z-index: 2; right: 0; bottom: 19px; left: 0; display: flex; justify-content: center; align-items: center; gap: 8px; }
+.home-scene-pagination button { width: 9px; height: 9px; flex: 0 0 9px; padding: 0; border: 1px solid rgba(255,255,255,.94); border-radius: 9px; background: rgba(255,255,255,.58); box-shadow: 0 2px 7px rgba(25,59,54,.18); cursor: pointer; transition: width .25s ease, flex-basis .25s ease, background .25s ease; }
+.home-scene-pagination button.active { width: 24px; flex-basis: 24px; background: #fff; }
+.public-hero-visual:has(.home-scene-arrow:hover, .home-scene-pagination button:hover) { transform: none; }
 .home-scene-fallback { background: linear-gradient(145deg, #c7d5c6, #bdcdbd 52%, #d5d6bd); }
 .public-login, .public-secondary-button, .theme-toggle, .export-button, .upload-button, .outline-button { border-color: #b8c8bb; color: #345653; background: rgba(221,231,220,.88); }
 .public-login:hover, .public-secondary-button:hover, .theme-toggle:hover, .export-button:hover, .upload-button:hover, .outline-button:hover { background: #cbdacb; border-color: #789a83; }
@@ -85,8 +96,38 @@ form label { color: #50696a; }
 form input { border-color: #bdcbbf; border-radius: 5px; background: #d5dfd5; }
 form input:focus { border-color: #58aa9d; box-shadow: 0 0 0 3px rgba(48,155,148,.12); }
 .social-row a { border-color: #bdcbbf; border-radius: 5px; background: #d6e0d6; }
+.social-row a { display: flex; justify-content: center; align-items: center; gap: 9px; }
+.social-icon { display: block; width: 19px; height: 19px; flex: 0 0 19px; }
+.facebook-icon { color: #1877f2; }
 .social-row a:hover { border-color: #789a83; background: #cbdacb; }
 .public-back-button { color: #287d89; }
+.legal-link { padding: 0; border: 0; color: #287d89; background: none; font: inherit; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.legal-link:hover { color: #1d5f5b; }
+.legal-backdrop { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(18,39,34,.58); backdrop-filter: blur(5px); }
+.legal-dialog { display: flex; flex-direction: column; width: min(100%, 680px); max-height: min(88vh, 760px); overflow: hidden; border: 1px solid #c5d3c9; border-radius: 8px; color: #263f3c; background: #f7f8f2; box-shadow: 0 26px 80px rgba(13,38,34,.32); animation: modern-rise .22s ease both; }
+.legal-dialog-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; padding: 25px 28px 18px; border-bottom: 1px solid #d8e0d8; }
+.legal-dialog-header .eyebrow { margin: 0 0 7px; }
+.legal-dialog-header h2 { margin: 0; color: #193b36; font-size: 26px; font-weight: 600; }
+.legal-close { display: grid; place-items: center; flex: 0 0 36px; width: 36px; height: 36px; border: 1px solid #c5d3c9; border-radius: 50%; color: #345653; background: transparent; font-size: 25px; line-height: 1; cursor: pointer; }
+.legal-close:hover { background: #e4ece3; }
+.legal-tabs { display: flex; gap: 22px; padding: 0 28px; border-bottom: 1px solid #d8e0d8; }
+.legal-tabs button { position: relative; padding: 14px 0 12px; border: 0; color: #607268; background: none; font-size: 12px; font-weight: 600; cursor: pointer; }
+.legal-tabs button.active { color: #246c67; }
+.legal-tabs button.active::after { position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: #c58d35; content: ''; }
+.legal-copy { overflow-y: auto; padding: 22px 28px 30px; overscroll-behavior: contain; }
+.legal-copy .legal-updated { margin: 0 0 22px; color: #64766b; font-size: 11px; }
+.legal-copy h3 { margin: 20px 0 6px; color: #263f3c; font-size: 14px; }
+.legal-copy h3:first-of-type { margin-top: 0; }
+.legal-copy p:not(.legal-updated) { margin: 0; color: #52675b; font-size: 12px; line-height: 1.7; }
+.legal-copy a { color: #246c67; text-underline-offset: 2px; }
+@media (max-width: 600px) {
+  .legal-backdrop { align-items: end; padding: 10px; }
+  .legal-dialog { max-height: 90vh; border-radius: 9px 9px 6px 6px; }
+  .legal-dialog-header { padding: 21px 20px 15px; }
+  .legal-dialog-header h2 { font-size: 23px; }
+  .legal-tabs { gap: 18px; padding: 0 20px; }
+  .legal-copy { padding: 19px 20px 26px; }
+}
 
 .admin-heading h1 { color: #183f4a; }
 .admin-total { border-radius: 7px; background: linear-gradient(135deg, #e7bd70, #efd39c); color: #263f3c; }
@@ -94,6 +135,22 @@ form input:focus { border-color: #58aa9d; box-shadow: 0 0 0 3px rgba(48,155,148,
 .admin-table-wrap { overflow: auto; }
 .admin-table th { color: #526558; background: #cbd8cc; }
 .admin-table td { color: #50696a; }
+.admin-view-tabs { display: flex; gap: 22px; margin: 0 0 20px; border-bottom: 1px solid #bdcbbf; }
+.admin-view-tabs button { position: relative; padding: 12px 2px; border: 0; color: #63766d; background: none; font-size: 12px; font-weight: 600; cursor: pointer; }
+.admin-view-tabs button.active { color: #263f3c; }
+.admin-view-tabs button.active::after { position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: #c58d35; content: ''; }
+.admin-bookings-table { min-width: 900px; }
+.admin-booking-customer { display: block; min-width: 130px; }
+.admin-booking-customer strong, .admin-booking-customer small { display: block; }
+.admin-booking-customer small { margin-top: 3px; color: #63766d; font-size: 10px; }
+.admin-cancel-booking { padding: 7px 10px; border: 1px solid #c99f91; border-radius: 4px; color: #8a4539; background: #fff4f0; font-size: 10px; font-weight: 700; cursor: pointer; }
+.admin-cancel-booking:hover { border-color: #a75d4e; background: #f8e4dc; }
+.admin-no-action { color: #849087; }
+html[data-theme='dark'] .admin-view-tabs { border-color: #334941; }
+html[data-theme='dark'] .admin-view-tabs button { color: #a4b1a8; }
+html[data-theme='dark'] .admin-view-tabs button.active { color: #edf3ec; }
+html[data-theme='dark'] .admin-booking-customer small { color: #a4b1a8; }
+html[data-theme='dark'] .admin-cancel-booking { border-color: #835d53; color: #f0c3b6; background: #34251f; }
 .role-pill { color: #3e635f; background: #cadbd2; }
 .admin-status.active { color: #315e4a; background: #cadcc9; }
 .admin-status.pending { color: #805c26; background: #efdfbd; }
@@ -107,6 +164,10 @@ form input:focus { border-color: #58aa9d; box-shadow: 0 0 0 3px rgba(48,155,148,
 @media (max-width: 700px) {
   .public-hero { min-height: auto; }
   .public-hero-visual { height: 360px; margin: 0 -10px; }
+  .home-scene-arrow { width: 36px; height: 36px; font-size: 27px; }
+  .home-scene-arrow.previous { left: 10px; }
+  .home-scene-arrow.next { right: 10px; }
+  .home-scene-pagination { bottom: 13px; }
   .profile-form { padding: 22px; }
   .home-header { box-shadow: 0 3px 12px rgba(25,65,69,.04); }
 }

@@ -52,7 +52,7 @@ html, body {
   transform: perspective(1200px) rotateY(-2deg);
   transition: transform .45s ease, box-shadow .45s ease;
 }
-.public-hero-visual:hover { transform: perspective(1200px) rotateY(0) translateY(-3px); box-shadow: 0 34px 66px rgba(25,59,54,.2); }
+.public-hero-visual:hover { transform: perspective(1200px) rotateY(-2deg); box-shadow: 0 34px 66px rgba(25,59,54,.2); }
 
 .primary-button, .dark-button {
   color: #fff;

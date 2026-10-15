@@ -77,6 +77,7 @@ function App() {
     try { return JSON.parse(localStorage.getItem('fixmate_pending_action') || 'null') } catch { return null }
   })
   const [publicView, setPublicView] = useState('home')
+  const [legalDocument, setLegalDocument] = useState(null)
   const [mode, setMode] = useState(() => {
     const params = new URLSearchParams(window.location.search)
     return params.get('verification') ? 'login' : 'signup'
@@ -202,20 +203,30 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  if (token && user) return <Dashboard user={user} setUser={setUser} pendingAction={pendingAction} bookingPaymentUpdate={bookingPaymentUpdate} message={message} setMessage={setMessage} uploadAvatar={uploadAvatar} uploading={uploading} onHome={() => window.scrollTo({ top: 0, behavior: 'smooth' })} onLogout={() => { localStorage.removeItem('fixmate_token'); localStorage.removeItem('fixmate_pending_action'); setPendingAction(null); setToken(null); setUser(null) }} />
+  if (token && user) return <><Dashboard user={user} setUser={setUser} pendingAction={pendingAction} bookingPaymentUpdate={bookingPaymentUpdate} message={message} setMessage={setMessage} uploadAvatar={uploadAvatar} uploading={uploading} onOpenLegal={setLegalDocument} onHome={() => window.scrollTo({ top: 0, behavior: 'smooth' })} onLogout={() => { localStorage.removeItem('fixmate_token'); localStorage.removeItem('fixmate_pending_action'); setPendingAction(null); setToken(null); setUser(null) }} />{legalDocument && <LegalDialog document={legalDocument} onClose={() => setLegalDocument(null)} onChange={setLegalDocument} />}</>
 
-  if (!showAuth) return <PublicHome view={publicView} setView={setPublicView} requireAuth={requireAuth} onHome={goPublicHome} onLogin={() => { setMode('login'); setSubmitted(false); setShowAuth(true) }} />
+  if (!showAuth) return <><PublicHome view={publicView} setView={setPublicView} requireAuth={requireAuth} onHome={goPublicHome} onOpenLegal={setLegalDocument} onLogin={() => { setMode('login'); setSubmitted(false); setShowAuth(true) }} />{legalDocument && <LegalDialog document={legalDocument} onClose={() => setLegalDocument(null)} onChange={setLegalDocument} />}</>
 
   return <main className="auth-shell">
     <section className="brand-panel"><button type="button" className="brand-mark" aria-label="FixMate home" onClick={goPublicHome}><span>+</span> fixmate</button><div className="brand-copy"><p className="eyebrow">HOME CARE, MADE SIMPLE</p><h1>Good help is<br /><em>closer</em> than you think.</h1><p className="intro">From a dripping tap to a deep clean, find trusted professionals who treat your home like their own.</p></div><div className="service-note"><span className="spark">✦</span><span><strong>Trusted by 12,000+ homes</strong><br />across your neighborhood</span></div><div className="curve curve-one" /><div className="curve curve-two" /></section>
     <section className="form-panel"><button className="public-back-button" onClick={goPublicHome}>← Back to home</button><div className="form-inner"><button type="button" className="mobile-brand brand-mark" aria-label="FixMate home" onClick={goPublicHome}><span>+</span> fixmate</button><div className="topline"><span>{mode === 'signup' ? 'Create your account' : 'Welcome back'}</span></div><h2>{mode === 'signup' ? <>Let’s get you <em>home.</em></> : <>Welcome <em>home.</em></>}</h2><p className="form-subtitle">{mode === 'signup' ? 'Join FixMate and make your home feel effortless.' : 'Sign in to manage your home services.'}</p><div className="mode-switch" role="tablist"><button className={mode === 'signup' ? 'active' : ''} onClick={() => { setMode('signup'); setSubmitted(false) }}>Sign up</button><button className={mode === 'login' ? 'active' : ''} onClick={() => { setMode('login'); setSubmitted(false) }}>Log in</button></div>
-      <form onSubmit={handleSubmit}>{mode === 'signup' && <label>Full name<input name="name" type="text" placeholder="e.g. Maya Patel" required /></label>}<label>Email address<input name="email" type="email" placeholder="you@example.com" required /></label><label>Password<div className="password-input"><input name="password" type={showPassword ? 'text' : 'password'} placeholder="At least 8 characters" minLength="8" required /><button type="button" onClick={() => setShowPassword(!showPassword)}>{showPassword ? 'Hide' : 'Show'}</button></div></label>{mode === 'signup' && <label className="check-row"><input type="checkbox" required /><span>I agree to the <a href="#terms">Terms of Service</a> and <a href="#privacy">Privacy Policy</a></span></label>}{mode === 'login' && <label className="check-row"><input type="checkbox" checked={rememberMe} onChange={(event) => setRememberMe(event.target.checked)} /><span>Remember me</span></label>}{submitted && <p className="success-message">{message}</p>}<button className="primary-button" type="submit">{mode === 'signup' ? 'Create my account' : 'Log in to FixMate'} <span>→</span></button></form>
-      <><div className="divider"><span>or continue with</span></div><div className="social-row"><a href={`${apiUrl}/api/auth/google`}><b className="google">G</b> Google</a><a href={`${apiUrl}/api/auth/facebook`}><b className="facebook">f</b> Facebook</a></div><p className="fine-print">{mode === 'signup' ? 'Already have an account?' : 'New to FixMate?'} <button onClick={() => { setMode(mode === 'signup' ? 'login' : 'signup'); setSubmitted(false) }}>{mode === 'signup' ? 'Log in' : 'Create an account'}</button></p></>
+      <form onSubmit={handleSubmit}>{mode === 'signup' && <label>Full name<input name="name" type="text" placeholder="e.g. Maya Patel" required /></label>}<label>Email address<input name="email" type="email" placeholder="you@example.com" required /></label><label>Password<div className="password-input"><input name="password" type={showPassword ? 'text' : 'password'} placeholder="At least 8 characters" minLength="8" required /><button type="button" onClick={() => setShowPassword(!showPassword)}>{showPassword ? 'Hide' : 'Show'}</button></div></label>{mode === 'signup' && <label className="check-row"><input type="checkbox" required /><span>I agree to the <button type="button" className="legal-link" onClick={() => setLegalDocument('terms')}>Terms of Service</button> and <button type="button" className="legal-link" onClick={() => setLegalDocument('privacy')}>Privacy Policy</button></span></label>}{mode === 'login' && <label className="check-row"><input type="checkbox" checked={rememberMe} onChange={(event) => setRememberMe(event.target.checked)} /><span>Remember me</span></label>}{submitted && <p className="success-message">{message}</p>}<button className="primary-button" type="submit">{mode === 'signup' ? 'Create my account' : 'Log in to FixMate'} <span>→</span></button></form>
+      <><div className="divider"><span>or continue with</span></div><div className="social-row">
+        <a href={`${apiUrl}/api/auth/google`} aria-label="Continue with Google">
+          <svg className="social-icon google-icon" viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2v5.1h6.6c3.9-3.6 6.1-8.8 6.1-15Z"/><path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.9l-6.6-5.1c-1.8 1.2-4 2-6.9 2-5.3 0-9.8-3.6-11.4-8.4H5.8v5.2A20 20 0 0 0 24 44Z"/><path fill="#FBBC05" d="M12.6 27.6a12 12 0 0 1 0-7.2v-5.2H5.8a20 20 0 0 0 0 17.6l6.8-5.2Z"/><path fill="#EA4335" d="M24 12c3 0 5.7 1 7.8 3.1l5.8-5.8C34.1 6 29.5 4 24 4A20 20 0 0 0 5.8 15.2l6.8 5.2C14.2 15.6 18.7 12 24 12Z"/></svg>
+          Google
+        </a>
+        <a href={`${apiUrl}/api/auth/facebook`} aria-label="Continue with Facebook">
+          <svg className="social-icon facebook-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.4c0-3.03 1.79-4.71 4.54-4.71 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.88v2.29h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07Z"/></svg>
+          Facebook
+        </a>
+      </div><p className="fine-print">{mode === 'signup' ? 'Already have an account?' : 'New to FixMate?'} <button onClick={() => { setMode(mode === 'signup' ? 'login' : 'signup'); setSubmitted(false) }}>{mode === 'signup' ? 'Log in' : 'Create an account'}</button></p></>
     </div></section>
+    {legalDocument && <LegalDialog document={legalDocument} onClose={() => setLegalDocument(null)} onChange={setLegalDocument} />}
   </main>
 }
 
-function Dashboard({ user, setUser, pendingAction, bookingPaymentUpdate, message, setMessage, uploadAvatar, uploading, onHome, onLogout }) {
+function Dashboard({ user, setUser, pendingAction, bookingPaymentUpdate, message, setMessage, uploadAvatar, uploading, onOpenLegal, onHome, onLogout }) {
   const firstName = user.name.split(' ')[0]
   const [view, setView] = useState(() => pendingAction?.type === 'bookings' ? 'bookings' : pendingAction?.type === 'profile' ? 'profile' : ['plans', 'checkout'].includes(pendingAction?.type) ? 'plans' : user.role === 'admin' ? 'admin' : 'home')
   const [address, setAddress] = useState(user.address || {})
@@ -395,14 +406,70 @@ function Dashboard({ user, setUser, pendingAction, bookingPaymentUpdate, message
   const homeExtras = <section className="home-content-extended"><div className="steps-heading"><p className="eyebrow">WHY FIXMATE</p><h2>Home care that feels effortless.</h2></div><div className="spotlight-strip">{categories.slice(0, 3).map((category) => <article className="spotlight-card" key={category.title}><img src={category.image} alt="" /><div className="spotlight-copy"><small>Popular this week</small><strong>{category.title} made simple</strong></div></article>)}</div><div className="metrics-strip"><div className="metric-item"><span>✦</span><div><strong>12k+</strong><small>happy homes served</small></div></div><div className="metric-item"><span>◷</span><div><strong>45 min</strong><small>average arrival time</small></div></div><div className="metric-item"><span>★</span><div><strong>4.9/5</strong><small>trusted service rating</small></div></div></div><div className="steps-section"><div className="steps-heading"><p className="eyebrow">HOW IT WORKS</p><h2>From request to done.</h2></div><div className="steps-grid"><article className="step-card" onPointerMove={tiltServiceCard} onPointerLeave={resetServiceCard}><span className="step-number">01</span><strong>Choose a service</strong><p>Tell us what your home needs and pick a time that works for you.</p></article><article className="step-card" onPointerMove={tiltServiceCard} onPointerLeave={resetServiceCard}><span className="step-number">02</span><strong>Meet a trusted pro</strong><p>We match your request with a verified professional nearby.</p></article><article className="step-card" onPointerMove={tiltServiceCard} onPointerLeave={resetServiceCard}><span className="step-number">03</span><strong>Enjoy your space</strong><p>Track the booking, get clear updates, and settle in comfortably.</p></article></div></div></section>
 
   const homeContent = <><section className="welcome-row"><div><p className="eyebrow">YOUR HOME, YOUR WAY</p><h1>Good morning, {firstName}<span>.</span></h1><p>What can we help you take care of today?</p></div><div className="profile-upload"><Avatar user={user} large /><label className="upload-button">{uploading ? 'Uploading...' : '+ Add photo'}<input type="file" accept="image/png,image/jpeg,image/webp" onChange={uploadAvatar} disabled={uploading} /></label></div></section>{message && <p className="dashboard-message">{message}</p>}<section className="dashboard-content"><div className="main-column"><div className="section-heading"><div><p className="eyebrow">EXPLORE SERVICES</p><h2>Make home feel easy.</h2></div><button className="text-button" onClick={() => setBookingService('choose')}>Explore all services <span>→</span></button></div><p className="service-discount-note">Each service is paid separately. Silver saves 5%; Gold saves 10%.</p><ServiceMarquee accessLevel={activePlanLevel(user)} onSelect={(service) => setBookingService(service)} /><div className="booking-banner"><div><p className="eyebrow">NEED A HAND?</p><h3>Book your next service<br />in a few simple steps.</h3><button className="dark-button" onClick={() => setBookingService('choose')}>Browse all services <span>→</span></button></div><div className="banner-mark">⌂</div></div></div><aside className="side-column"><div className="side-heading"><h3>Your activity</h3><button className="text-button" onClick={() => setView('bookings')}>See all</button></div>{bookings.length ? <div className="activity-list">{bookings.slice(0, 3).map((booking) => <div className="activity-item" key={booking._id}><span>{booking.serviceIcon}</span><div><strong>{booking.service}</strong><small>{new Date(booking.scheduledDate).toLocaleDateString()}</small></div><b>{booking.status.replaceAll('_', ' ')}</b></div>)}</div> : <div className="empty-activity"><span>✦</span><strong>No bookings yet</strong><p>Your next home improvement<br />story starts here.</p><button className="outline-button" onClick={() => setBookingService('choose')}>Find a service</button></div>}<div className="trust-card"><span>✦</span><div><strong>FixMate promise</strong><p>Trusted pros, clear pricing,<br />peace of mind.</p></div></div></aside></section>{homeExtras}</>
-  return <main className="home-shell"><header className="home-header"><button type="button" className="brand-mark" aria-label="FixMate home" onClick={() => { setView('home'); onHome() }}><span>+</span> fixmate</button><nav><button className={view === 'home' ? 'active' : ''} onClick={() => setView('home')}>Home</button><button className={view === 'plans' ? 'active' : ''} onClick={() => setView('plans')}>Plans</button><button className={view === 'profile' ? 'active' : ''} onClick={() => setView('profile')}>My profile</button><button className={view === 'bookings' ? 'active' : ''} onClick={() => setView('bookings')}>My bookings</button>{user.role === 'admin' && <button className={view === 'admin' ? 'active' : ''} onClick={() => setView('admin')}>Admin</button>}</nav><div className="header-actions"><button className="icon-button" aria-label="Notifications">♧</button><button className="avatar-button" onClick={() => setView('profile')}><Avatar user={user} /></button><button className="logout-button" onClick={onLogout}>Log out</button></div></header>{view === 'profile' ? <ProfileView key={address.updatedAt || address.formatted || 'empty'} user={user} address={address} addressInput={addressInput} suggestions={suggestions} chooseAddress={chooseAddress} searchAddress={searchAddress} saveAddress={saveAddress} savingAddress={savingAddress} addressSaved={addressSaved} downloadProfile={downloadProfile} /> : view === 'plans' ? <PlansView user={user} startCheckout={startCheckout} message={message} checkoutLoading={checkoutLoading} /> : view === 'bookings' ? <BookingsView bookings={bookings} cancelBooking={cancelBooking} onBook={() => setBookingService('choose')} /> : view === 'admin' ? <AdminView /> : homeContent}{bookingService && <BookingModal service={bookingService} address={address} user={user} onClose={() => setBookingService(null)} onSubmit={createBooking} />}{message && <Toast message={message} onClose={() => setMessage('')} />}<Footer onHome={() => { setView('home'); onHome() }} /></main>
+  return <main className="home-shell"><header className="home-header"><button type="button" className="brand-mark" aria-label="FixMate home" onClick={() => { setView('home'); onHome() }}><span>+</span> fixmate</button><nav><button className={view === 'home' ? 'active' : ''} onClick={() => setView('home')}>Home</button><button className={view === 'plans' ? 'active' : ''} onClick={() => setView('plans')}>Plans</button><button className={view === 'profile' ? 'active' : ''} onClick={() => setView('profile')}>My profile</button><button className={view === 'bookings' ? 'active' : ''} onClick={() => setView('bookings')}>My bookings</button>{user.role === 'admin' && <button className={view === 'admin' ? 'active' : ''} onClick={() => setView('admin')}>Admin</button>}</nav><div className="header-actions"><button className="icon-button" aria-label="Notifications">♧</button><button className="avatar-button" onClick={() => setView('profile')}><Avatar user={user} /></button><button className="logout-button" onClick={onLogout}>Log out</button></div></header>{view === 'profile' ? <ProfileView key={address.updatedAt || address.formatted || 'empty'} user={user} address={address} addressInput={addressInput} suggestions={suggestions} chooseAddress={chooseAddress} searchAddress={searchAddress} saveAddress={saveAddress} savingAddress={savingAddress} addressSaved={addressSaved} downloadProfile={downloadProfile} /> : view === 'plans' ? <PlansView user={user} startCheckout={startCheckout} message={message} checkoutLoading={checkoutLoading} /> : view === 'bookings' ? <BookingsView bookings={bookings} cancelBooking={cancelBooking} onBook={() => setBookingService('choose')} /> : view === 'admin' ? <AdminView /> : homeContent}{bookingService && <BookingModal service={bookingService} address={address} user={user} onClose={() => setBookingService(null)} onSubmit={createBooking} />}{message && <Toast message={message} onClose={() => setMessage('')} />}<Footer onHome={() => { setView('home'); onHome() }} onOpenLegal={onOpenLegal} /></main>
 }
 
 function Toast({ message, onClose }) {
   return <div className="toast" role="status"><span className="toast-icon">✓</span><span>{message}</span><button aria-label="Dismiss notification" onClick={onClose}>×</button></div>
 }
 
-function PublicHome({ view, setView, requireAuth, onHome, onLogin }) {
+function LegalDialog({ document, onClose, onChange }) {
+  const isTerms = document === 'terms'
+  const title = isTerms ? 'Terms of Service' : 'Privacy Policy'
+
+  useEffect(() => {
+    const previousOverflow = window.document.body.style.overflow
+    const handleKeyDown = (event) => { if (event.key === 'Escape') onClose() }
+    window.document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [onClose])
+
+  return <div className="legal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}>
+    <section className="legal-dialog" role="dialog" aria-modal="true" aria-labelledby="legal-dialog-title">
+      <header className="legal-dialog-header">
+        <div><p className="eyebrow">FIXMATE POLICIES</p><h2 id="legal-dialog-title">{title}</h2></div>
+        <button type="button" className="legal-close" aria-label="Close policy" onClick={onClose}>×</button>
+      </header>
+      <div className="legal-tabs" role="tablist" aria-label="Legal documents">
+        <button type="button" role="tab" aria-selected={isTerms} className={isTerms ? 'active' : ''} onClick={() => onChange('terms')}>Terms of Service</button>
+        <button type="button" role="tab" aria-selected={!isTerms} className={!isTerms ? 'active' : ''} onClick={() => onChange('privacy')}>Privacy Policy</button>
+      </div>
+      <div className="legal-copy" key={document}>
+        {isTerms ? <>
+          <p className="legal-updated">Effective October 15, 2026</p>
+          <h3>Using FixMate</h3>
+          <p>FixMate helps customers find and book home services from listed professionals. By creating an account or placing a booking, you agree to provide accurate information and use the service lawfully.</p>
+          <h3>Bookings and payment</h3>
+          <p>Review the service, schedule, and price shown before confirming a booking. Prices are shown in the stated currency and each service is charged separately unless checkout says otherwise. Payment is completed through the payment provider presented during checkout.</p>
+          <h3>Changes and cancellations</h3>
+          <p>Manage bookings through your account. Cancellation eligibility, timing, and any applicable refund are shown in the booking flow or confirmation and depend on the booking status and service terms.</p>
+          <h3>Accounts and service visits</h3>
+          <p>Keep your sign-in details secure and tell us if you believe someone has accessed your account without permission. Customers should provide safe, reasonable access to the service location and communicate relevant job details. FixMate may update or suspend access where necessary to protect users or the service.</p>
+          <h3>Questions</h3>
+          <p>For help with these terms, contact <a href="mailto:hello@fixmate.local">hello@fixmate.local</a>.</p>
+        </> : <>
+          <p className="legal-updated">Effective October 15, 2026</p>
+          <h3>Information you provide</h3>
+          <p>FixMate uses account details such as your name and email, along with information you choose to add, such as your service address, profile photo, bookings, and messages to support.</p>
+          <h3>How information is used</h3>
+          <p>We use this information to operate your account, arrange and manage services, process payments through our payment provider, provide support, and protect the platform from misuse.</p>
+          <h3>When information is shared</h3>
+          <p>Booking details needed to arrange a visit may be shared with the relevant service professional. Information may also be processed by providers that help operate FixMate, or disclosed where required to comply with law or protect users and the service.</p>
+          <h3>Retention and your choices</h3>
+          <p>We retain information for as long as needed to provide the service, meet operational or legal obligations, and resolve disputes. You can review or update profile details in your account, or contact us with a request about your information.</p>
+          <h3>Security and contact</h3>
+          <p>We use reasonable safeguards to protect account information, but no online service can promise absolute security. For privacy questions or requests, email <a href="mailto:hello@fixmate.local">hello@fixmate.local</a>.</p>
+        </>}
+      </div>
+    </section>
+  </div>
+}
+
+function PublicHome({ view, setView, requireAuth, onHome, onOpenLegal, onLogin }) {
   const book = (service = 'choose') => requireAuth({ type: 'booking', service })
   return <main className="home-shell public-home">
     <header className="home-header">
@@ -458,7 +525,7 @@ function PublicHome({ view, setView, requireAuth, onHome, onLogin }) {
         </section>
       </section>
     </>}
-    <Footer onHome={onHome} />
+    <Footer onHome={onHome} onOpenLegal={onOpenLegal} />
   </main>
 }
 
@@ -493,12 +560,17 @@ function ServicePrice({ service, accessLevel = 'free' }) {
   </span>
 }
 
-function Footer({ onHome }) {
-  return <footer className="site-footer"><div className="footer-main"><div className="footer-brand"><button type="button" className="brand-mark" aria-label="FixMate home" onClick={onHome}><span>+</span> fixmate</button><p>Reliable home care, thoughtfully delivered.</p></div><div className="footer-column"><strong>Services</strong><button>Cleaning</button><button>Repairs</button><button>Painting</button><button>Pest control</button></div><div className="footer-column"><strong>Support</strong><button>Help center</button><button>Contact us</button><button>Safety promise</button><button>Terms & privacy</button></div><div className="footer-contact"><strong>Need a hand?</strong><p>Our team is here to help you feel at home.</p><a href="mailto:hello@fixmate.local">hello@fixmate.local</a></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} FixMate. Built for better homes.</span><span>Trusted professionals · Clear pricing · Peace of mind</span></div></footer>
+function Footer({ onHome, onOpenLegal }) {
+  return <footer className="site-footer"><div className="footer-main"><div className="footer-brand"><button type="button" className="brand-mark" aria-label="FixMate home" onClick={onHome}><span>+</span> fixmate</button><p>Reliable home care, thoughtfully delivered.</p></div><div className="footer-column"><strong>Services</strong><button>Cleaning</button><button>Repairs</button><button>Painting</button><button>Pest control</button></div><div className="footer-column"><strong>Support</strong><button>Help center</button><button>Contact us</button><button>Safety promise</button><button type="button" onClick={() => onOpenLegal('terms')}>Terms & privacy</button></div><div className="footer-contact"><strong>Need a hand?</strong><p>Our team is here to help you feel at home.</p><a href="mailto:hello@fixmate.local">hello@fixmate.local</a></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} FixMate. Built for better homes.</span><span>Trusted professionals · Clear pricing · Peace of mind</span></div></footer>
 }
 
 function AdminView() {
+  const [section, setSection] = useState('users')
   const [users, setUsers] = useState([])
+  const [bookings, setBookings] = useState([])
+  const [bookingsLoading, setBookingsLoading] = useState(false)
+  const [bookingsError, setBookingsError] = useState('')
+  const [cancellingBooking, setCancellingBooking] = useState(null)
   const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 })
   const [search, setSearch] = useState('')
   const [role, setRole] = useState('')
@@ -506,6 +578,33 @@ function AdminView() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const token = localStorage.getItem('fixmate_token')
+
+  const loadBookings = useCallback(async () => {
+    setBookingsLoading(true)
+    setBookingsError('')
+    try {
+      const response = await fetch(`${apiUrl}/api/admin/bookings`, { headers: { Authorization: `Bearer ${token}` } })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.message || 'Could not load bookings.')
+      setBookings(data.bookings || [])
+    } catch (loadError) {
+      setBookingsError(loadError.message || 'Could not load bookings.')
+    } finally {
+      setBookingsLoading(false)
+    }
+  }, [token])
+
+  const cancelAdminBooking = async (bookingId, cancellation) => {
+    const response = await fetch(`${apiUrl}/api/admin/bookings/${bookingId}/cancel`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(cancellation)
+    })
+    const data = await response.json()
+    if (!response.ok) throw new Error(data.message || 'Could not cancel booking.')
+    setBookings((current) => current.map((booking) => booking._id === bookingId ? data.booking : booking))
+    setCancellingBooking(null)
+  }
 
   const loadUsers = useCallback(async (page = 1) => {
     setLoading(true)
@@ -528,11 +627,19 @@ function AdminView() {
 
   const activePlansOnPage = users.filter((listedUser) => listedUser.planStatus === 'active').length
 
+  const cancellableStatuses = ['pending_payment', 'requested', 'confirmed', 'in_progress']
+  const activeBookings = bookings.filter((booking) => cancellableStatuses.includes(booking.status)).length
+
   return <section className="admin-page">
     <div className="admin-heading">
-      <div><p className="eyebrow">PLATFORM CONTROL</p><h1>User management</h1><p>Review accounts, roles, and time-limited access plans.</p></div>
-      <div className="admin-total"><strong>{pagination.total}</strong><small>Matching users</small></div>
+      <div><p className="eyebrow">PLATFORM CONTROL</p><h1>{section === 'users' ? 'User management' : 'Booking management'}</h1><p>{section === 'users' ? 'Review accounts, roles, and time-limited access plans.' : 'Review and manage customer service bookings.'}</p></div>
+      <div className="admin-total"><strong>{section === 'users' ? pagination.total : bookings.length}</strong><small>{section === 'users' ? 'Matching users' : 'Total bookings'}</small></div>
     </div>
+    <div className="admin-view-tabs" role="tablist" aria-label="Admin management views">
+      <button type="button" role="tab" aria-selected={section === 'users'} className={section === 'users' ? 'active' : ''} onClick={() => setSection('users')}>Users</button>
+      <button type="button" role="tab" aria-selected={section === 'bookings'} className={section === 'bookings' ? 'active' : ''} onClick={() => { setSection('bookings'); loadBookings() }}>Bookings</button>
+    </div>
+    {section === 'users' ? <>
     <div className="admin-metrics" aria-label="User management summary">
       <div><span aria-hidden="true">◎</span><strong>{pagination.total}</strong><small>Matching users</small></div>
       <div><span aria-hidden="true">▤</span><strong>{users.length}</strong><small>Shown on this page</small></div>
@@ -555,6 +662,33 @@ function AdminView() {
       </table>
     </div>
     <div className="pagination"><button disabled={loading || pagination.page <= 1} onClick={() => loadUsers(pagination.page - 1)}>← Previous</button><span>Page {pagination.page} of {pagination.pages}</span><button disabled={loading || pagination.page >= pagination.pages} onClick={() => loadUsers(pagination.page + 1)}>Next →</button></div>
+    </> : <>
+      <div className="admin-metrics" aria-label="Booking management summary">
+        <div><span aria-hidden="true">▤</span><strong>{bookings.length}</strong><small>All bookings</small></div>
+        <div><span aria-hidden="true">◷</span><strong>{activeBookings}</strong><small>Can be cancelled</small></div>
+        <div><span aria-hidden="true">✓</span><strong>{bookings.length - activeBookings}</strong><small>Completed or cancelled</small></div>
+      </div>
+      {bookingsError && <div className="admin-error" role="alert"><span>{bookingsError}</span><button onClick={loadBookings}>Try again</button></div>}
+      <div className="admin-table-wrap" aria-busy={bookingsLoading}>
+        <table className="admin-table admin-bookings-table">
+          <thead><tr><th>Customer</th><th>Service</th><th>Scheduled</th><th>Amount</th><th>Payment</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            {bookings.map((booking) => <tr key={booking._id}>
+              <td><div className="admin-user"><span className="admin-booking-customer"><strong>{booking.user?.name || 'Deleted user'}</strong><small>{booking.user?.email || '—'}</small></span></div></td>
+              <td>{booking.service}</td>
+              <td>{new Date(booking.scheduledDate).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</td>
+              <td>{Number.isFinite(booking.amountDue) ? formatPrice(booking.amountDue) : '—'}</td>
+              <td><span className={`admin-status ${booking.paymentStatus}`}>{booking.paymentStatus}</span></td>
+              <td><span className={`booking-status ${booking.status}`}>{booking.status.replaceAll('_', ' ')}</span></td>
+              <td>{cancellableStatuses.includes(booking.status) ? <button className="admin-cancel-booking" type="button" onClick={() => setCancellingBooking(booking)}>Cancel</button> : <span className="admin-no-action">—</span>}</td>
+            </tr>)}
+            {bookingsLoading && <tr><td className="admin-table-message" colSpan="7">Loading bookings...</td></tr>}
+            {!bookingsLoading && !bookingsError && !bookings.length && <tr><td className="admin-table-message" colSpan="7">No bookings found.</td></tr>}
+          </tbody>
+        </table>
+      </div>
+      {cancellingBooking && <CancelBookingDialog booking={cancellingBooking} onClose={() => setCancellingBooking(null)} onConfirm={(cancellation) => cancelAdminBooking(cancellingBooking._id, cancellation)} />}
+    </>}
   </section>
 }
 
